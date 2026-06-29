@@ -16,7 +16,9 @@ from .const import (
 )
 from .coordinator import FimerCoordinator
 
-PLATFORMS: list[Platform] = [Platform.SENSOR]
+PLATFORMS: list[Platform] = [
+    Platform.SENSOR,
+]
 
 
 async def async_setup_entry(
@@ -28,15 +30,15 @@ async def async_setup_entry(
     session: ClientSession = async_get_clientsession(hass)
 
     api = FimerApi(
-        entry.data[CONF_USERNAME],
-        entry.data[CONF_PASSWORD],
-        session,
+        session=session,
+        username=entry.data[CONF_USERNAME],
+        password=entry.data[CONF_PASSWORD],
+        plant_id=entry.data[CONF_PLANT_ID],
     )
 
     coordinator = FimerCoordinator(
         hass,
         api,
-        entry.data[CONF_PLANT_ID],
     )
 
     await coordinator.async_config_entry_first_refresh()
@@ -56,7 +58,7 @@ async def async_unload_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
 ) -> bool:
-    """Unload a config entry."""
+    """Unload config entry."""
 
     unload_ok = await hass.config_entries.async_unload_platforms(
         entry,
