@@ -1,33 +1,43 @@
 """Constants for the FIMER Aurora Vision integration."""
 
-from __future__ import annotations
-
 from datetime import timedelta
 
 DOMAIN = "fimer"
 
-CONF_USERNAME = "username"
-CONF_PASSWORD = "password"
-CONF_PLANT_ID = "plant_id"
-
-DEFAULT_SCAN_INTERVAL = timedelta(seconds=60)
+NAME = "FIMER Aurora Vision"
 
 MANUFACTURER = "FIMER"
-MODEL = "Aurora Vision"
 
-ATTR_GENERATION_POWER = "generation_power"
-ATTR_GRID_POWER = "grid_power"
-ATTR_BATTERY_POWER = "battery_power"
+UPDATE_INTERVAL = timedelta(seconds=60)
 
-ATTR_GENERATION_ENERGY_TODAY = "generation_energy_today"
-ATTR_GENERATION_ENERGY_TOTAL = "generation_energy_total"
+# Config Flow
+CONF_USERNAME = "username"
+CONF_PASSWORD = "password"
+CONF_OTP = "otp"
 
-ATTR_GRID_IMPORT_TODAY = "grid_import_today"
-ATTR_GRID_EXPORT_TODAY = "grid_export_today"
+# API URLs
+BASE_URL = "https://www.auroravision.net"
 
-ATTR_BATTERY_CHARGE_TODAY = "battery_charge_today"
-ATTR_BATTERY_DISCHARGE_TODAY = "battery_discharge_today"
+LOGIN_URL = f"{BASE_URL}/ums/v1/login"
 
-ATTR_BATTERY_SOC = "battery_soc"
+PORTFOLIO_URL = f"{BASE_URL}/ums/v1/portfolios"
 
-ATTR_LAST_UPDATE = "last_update"
+TELEMETRY_URL = f"{BASE_URL}/telemetry/v1"
+
+# Telemetry parameters
+AGP = "All"
+AFX_LAST = "Last"
+AFX_DELTA = "Delta"
+
+# Sensor keys
+SENSOR_GENERATION_POWER = "generation_power"
+SENSOR_GENERATION_TODAY = "generation_today"
+SENSOR_GRID_POWER = "grid_power"
+SENSOR_BATTERY_POWER = "battery_power"
+
+SENSORS = (
+    SENSOR_GENERATION_POWER,
+    SENSOR_GENERATION_TODAY,
+    SENSOR_GRID_POWER,
+    SENSOR_BATTERY_POWER,
+)
