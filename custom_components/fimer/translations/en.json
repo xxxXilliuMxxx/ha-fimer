@@ -1,0 +1,21 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "FIMER Aurora Vision",
+        "description": "Configure your Aurora Vision account.",
+        "data": {
+          "username": "Username",
+          "password": "Password",
+          "plant_id": "Plant ID"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect."
+    },
+    "abort": {
+      "already_configured": "Already configured."
+    }
+  }
+}

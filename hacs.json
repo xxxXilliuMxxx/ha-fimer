@@ -1,0 +1,9 @@
+{
+  "name": "FIMER Aurora Vision",
+  "content_in_root": false,
+  "render_readme": true,
+  "domains": [
+    "fimer"
+  ],
+  "homeassistant": "2024.6.0"
+}

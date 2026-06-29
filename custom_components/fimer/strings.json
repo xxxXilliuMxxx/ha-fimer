@@ -1,0 +1,21 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "FIMER Aurora Vision",
+        "description": "Configureer je Aurora Vision account.",
+        "data": {
+          "username": "Gebruikersnaam",
+          "password": "Wachtwoord",
+          "plant_id": "Plant ID"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Kan geen verbinding maken."
+    },
+    "abort": {
+      "already_configured": "Deze installatie is al toegevoegd."
+    }
+  }
+}
