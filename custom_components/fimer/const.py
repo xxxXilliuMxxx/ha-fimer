@@ -8,3 +8,7 @@ DEFAULT_SCAN_INTERVAL = 60
 
 MANUFACTURER = "FIMER"
 MODEL = "Aurora Vision"
+
+API_TIMEOUT = 20
+
+ATTR_LAST_UPDATE = "last_update"
