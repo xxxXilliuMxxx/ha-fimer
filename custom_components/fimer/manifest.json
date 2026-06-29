@@ -2,15 +2,10 @@
   "domain": "fimer",
   "name": "FIMER Aurora Vision",
   "version": "0.0.1",
-  "documentation": "https://github.com/jouwnaam/ha-fimer",
-  "issue_tracker": "https://github.com/jouwnaam/ha-fimer/issues",
-  "codeowners": [
-    "@jouwnaam"
-  ],
+  "config_flow": true,
   "requirements": [
     "requests>=2.31.0"
   ],
-  "config_flow": true,
   "dependencies": [],
   "iot_class": "cloud_polling",
   "loggers": [
