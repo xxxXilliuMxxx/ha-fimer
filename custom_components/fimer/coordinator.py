@@ -37,7 +37,6 @@ class FimerCoordinator(DataUpdateCoordinator[dict]):
         try:
             return await self.api.get_data()
 
-        except Exception as err:
-            raise UpdateFailed(
-                f"Failed updating Aurora Vision: {err}"
-            ) from err
+        except Exception:
+            _LOGGER.exception("Aurora Vision update failed")
+            raise
