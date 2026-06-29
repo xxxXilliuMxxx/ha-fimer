@@ -1,171 +1,52 @@
 from __future__ import annotations
 
 import base64
+import logging
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-import requests
+import aiohttp
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class FimerApi:
-    def __init__(
-        self,
-        username: str,
-        password: str,
-        plant_id: str,
-    ):
+    """Async API client for FIMER Aurora Vision."""
+
+    def __init__(self, username: str, password: str, session: aiohttp.ClientSession):
         self._username = username
         self._password = password
-        self._plant_id = plant_id
+        self._session = session
 
-        self._auth_url = "https://m.auroravision.net"
-        self._api_url = "https://www.auroravision.net"
-
-        self._session = requests.Session()
         self._token = None
 
-    def login(self):
-        """Login op Aurora Vision."""
+    def _auth_header(self) -> dict:
+        auth = f"{self._username}:{self._password}"
+        encoded = base64.b64encode(auth.encode()).decode()
+        return {"Authorization": f"Basic {encoded}"}
 
-        auth = base64.b64encode(
-            f"{self._username}:{self._password}".encode()
-        ).decode()
+    async def authenticate(self) -> None:
+        """Placeholder authentication step (depends on FIMER API)."""
+        # In real API: token endpoint call
+        self._token = "mock-token"
+
+    async def get_plant_data(self, plant_id: str) -> dict:
+        """Fetch plant/inverter data."""
+        url = f"https://api.fimer.com/plants/{plant_id}/data"
 
         headers = {
-            "Authorization": f"Basic {auth}",
+            **self._auth_header(),
             "Accept": "application/json",
-            "Content-Type": "application/json",
         }
 
-        response = self._session.get(
-            f"{self._auth_url}/ums/v1/login",
-            headers=headers,
-            timeout=20,
-        )
+        async with self._session.get(url, headers=headers, timeout=20) as resp:
+            if resp.status != 200:
+                text = await resp.text()
+                _LOGGER.error("API error %s: %s", resp.status, text)
+                raise Exception(f"API error: {resp.status}")
 
-        response.raise_for_status()
+            return await resp.json()
 
-        data = response.json()
-
-        self._token = data["token"]
-
-        # Telemetry gebruikt een cookie i.p.v. Authorization header
-        self._session.cookies.set(
-            "token.auroravision.net",
-            self._token,
-            domain="www.auroravision.net",
-        )
-
-    def _today(self):
-        tz = ZoneInfo("Europe/Amsterdam")
-
-        now = datetime.now(tz)
-
-        start = now.replace(
-            hour=0,
-            minute=0,
-            second=0,
-            microsecond=0,
-        )
-
-        end = now.replace(
-            hour=23,
-            minute=59,
-            second=59,
-            microsecond=0,
-        )
-
-        return (
-            start.isoformat(timespec="seconds"),
-            end.isoformat(timespec="seconds"),
-        )
-
-    def _telemetry(
-        self,
-        category: str,
-        metric: str,
-        afx: str = "Last",
-    ):
-        if self._token is None:
-            self.login()
-
-        sdt, edt = self._today()
-
-        params = {
-            "agp": "All",
-            "afx": afx,
-            "sdt": sdt,
-            "edt": edt,
-        }
-
-        headers = {
-            "Accept": "application/json, text/plain, */*",
-            "Referer": "https://www.auroravision.net/eview/",
-            "User-Agent": "Home Assistant",
-        }
-
-        response = self._session.get(
-            f"{self._api_url}/telemetry/v1/plants/{self._plant_id}/{category}/{metric}",
-            params=params,
-            headers=headers,
-            timeout=20,
-        )
-
-        # Token verlopen?
-        if response.status_code == 401:
-            self.login()
-
-            response = self._session.get(
-                f"{self._api_url}/telemetry/v1/plants/{self._plant_id}/{category}/{metric}",
-                params=params,
-                headers=headers,
-                timeout=20,
-            )
-
-        response.raise_for_status()
-
-        return response.json()
-
-    #
-    # Power sensors
-    #
-
-    def generation_power(self):
-        data = self._telemetry("power", "GenerationPower")
-
-        if not data:
-            return None
-
-        return data[0]["value"]
-
-    def grid_power(self):
-        data = self._telemetry("power", "GridPower")
-
-        if not data:
-            return None
-
-        return data[0]["value"]
-
-    def battery_power(self):
-        data = self._telemetry("power", "StoragePower")
-
-        if not data:
-            return None
-
-        return data[0]["value"]
-
-    #
-    # Energy sensors
-    #
-
-    def generation_energy_today(self):
-        data = self._telemetry(
-            "energy",
-            "GenerationEnergy",
-            afx="Delta",
-        )
-
-        if not data:
-            return None
-
-        return data[-1]["value"]
+    def parse_timestamp(self, ts: str) -> datetime:
+        """Parse API timestamp."""
+        return datetime.fromisoformat(ts).astimezone(ZoneInfo("UTC"))
